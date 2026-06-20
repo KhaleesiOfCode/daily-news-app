@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}{{ t('briefing.title') }}{% endblock %}
+
+{% block content %}
+<div class="briefing">
+  <div class="briefing-header">
+    <h2>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      {{ t('briefing.title') }}
+    </h2>
+    <p class="briefing-sub">{{ t('briefing.subtitle', hours=hours) }}</p>
+  </div>
+
+  {% if weather and not weather.error %}
+  <div class="briefing-meta">
+    <div class="briefing-weather">
+      <img src="{{ weather.icon }}" alt="" class="weather-icon-sm" loading="lazy">
+      <span><strong>{{ weather.location }}</strong> {{ weather.temp }}&deg;C, {{ weather.desc }}</span>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if markets and not markets.error %}
+  <div class="briefing-markets">
+    {% for m in markets %}
+    {% if m.price %}
+    <div class="bm-item">
+      <span class="bm-name">{{ m.name }}</span>
+      <span class="bm-price">{{ "%.2f"|format(m.price) }}</span>
+      {% if m.change_pct is not none %}
+      <span class="bm-change {% if m.change_pct >= 0 %}positive{% else %}negative{% endif %}">
+        {{ "%+.2f"|format(m.change_pct) }}%
+      </span>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="briefing-tools">
+    <form method="GET" action="/briefing" class="briefing-hours">
+      <input type="hidden" name="ui_lang" value="{{ ui_lang }}">
+      <label for="hours">{{ t('briefing.last') }}</label>
+      <select name="hours" id="hours" onchange="this.form.submit()">
+        <option value="12" {% if hours == 12 %}selected{% endif %}>{{ t('briefing.hours_12') }}</option>
+        <option value="24" {% if hours == 24 %}selected{% endif %}>{{ t('briefing.hours_24') }}</option>
+        <option value="48" {% if hours == 48 %}selected{% endif %}>{{ t('briefing.hours_48') }}</option>
+        <option value="72" {% if hours == 72 %}selected{% endif %}>{{ t('briefing.hours_72') }}</option>
+      </select>
+    </form>
+  </div>
+
+  <section class="articles">
+    {% if articles %}
+      {% for article in articles %}
+      <article class="card">
+        {% if article.media %}
+        <div class="card-img">
+          <img src="{{ article.media }}" alt="" loading="lazy">
+        </div>
+        {% endif %}
+        <div class="card-body">
+          <div class="card-meta">
+            <span class="source">{{ article.source }}</span>
+            <span class="lang-tag lang-{{ article.lang }}">{{ get_language_name(article.lang) }}</span>
+            <span class="cat-tag">{{ get_category_name(article.category) }}</span>
+            {% if article.published %}
+            <span class="time">{{ time_ago(article.published) }}</span>
+            {% endif %}
+          </div>
+          <h2 class="card-title">
+            <a href="{{ article.link }}" target="_blank" rel="noopener">{{ article.title }}</a>
+          </h2>
+          {% if article.summary %}
+          <p class="card-summary">{{ article.summary[:300] }}{% if article.summary|length > 300 %}&hellip;{% endif %}</p>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+    {% else %}
+    <div class="empty">
+      <p>{{ t('briefing.no_news', hours=hours) }}</p>
+    </div>
+    {% endif %}
+  </section>
+
+  {% if errors %}
+  <section class="errors">
+    <details>
+      <summary>{{ t('error.loading') }} ({{ errors|length }})</summary>
+      <ul>
+        {% for err in errors %}
+        <li>{{ err }}</li>
+        {% endfor %}
+      </ul>
+    </details>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

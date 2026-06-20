@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}{{ t('nav.news') }}{% endblock %}
+
+{% block content %}
+<div class="toolbar">
+  <section class="filters">
+    <form method="GET" action="/news" class="filter-form" id="news-filter-form">
+      <input type="hidden" name="ui_lang" value="{{ ui_lang }}">
+      <div class="filter-group">
+        <label for="category">{{ t('filter.category') }}</label>
+        <select name="category" id="category" onchange="this.form.submit()">
+          <option value="all" {% if selected_category == 'all' %}selected{% endif %}>{{ t('filter.all') }}</option>
+          <option value="bolzano" {% if selected_category == 'bolzano' %}selected{% endif %}>{{ t('filter.bolzano') }}</option>
+          {% for cat in categories %}
+          {% if cat != 'bolzano' %}
+          <option value="{{ cat }}" {% if selected_category == cat %}selected{% endif %}>
+            {{ get_category_name(cat) }}
+          </option>
+          {% endif %}
+          {% endfor %}
+      </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="lang">{{ t('filter.language') }}</label>
+        <select name="lang" id="lang" onchange="this.form.submit()">
+          <option value="all" {% if selected_lang == 'all' %}selected{% endif %}>{{ t('filter.all') }}</option>
+          {% for lang in languages %}
+          <option value="{{ lang }}" {% if selected_lang == lang %}selected{% endif %}>
+            {{ get_language_name(lang) }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <button class="refresh-btn" title="Refresh">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      </button>
+    </form>
+  </section>
+</div>
+
+<section class="articles">
+  {% if articles %}
+    {% for article in articles %}
+    <article class="card">
+      {% if article.media %}
+      <div class="card-img">
+        <img src="{{ article.media }}" alt="" loading="lazy">
+      </div>
+      {% endif %}
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="source">{{ article.source }}</span>
+          <span class="lang-tag lang-{{ article.lang }}">{{ get_language_name(article.lang) }}</span>
+          <span class="cat-tag">{{ get_category_name(article.category) }}</span>
+          {% if article.published %}
+          <span class="time">{{ time_ago(article.published) }}</span>
+          {% endif %}
+        </div>
+        <h2 class="card-title">
+          <a href="{{ article.link }}" target="_blank" rel="noopener">{{ article.title }}</a>
+        </h2>
+        {% if article.summary %}
+        <p class="card-summary">{{ article.summary[:300] }}{% if article.summary|length > 300 %}&hellip;{% endif %}</p>
+        {% endif %}
+      </div>
+    </article>
+    {% endfor %}
+  {% else %}
+    <div class="empty">
+      <p>{{ t('dashboard.no_news') }}</p>
+      <p>{{ t('general.try_other_filters') }}</p>
+    </div>
+  {% endif %}
+</section>
+
+{% if errors %}
+<section class="errors">
+  <details>
+    <summary>{{ t('error.loading') }} ({{ errors|length }})</summary>
+    <ul>
+      {% for err in errors %}
+      <li>{{ err }}</li>
+      {% endfor %}
+    </ul>
+  </details>
+</section>
+{% endif %}
+{% endblock %}

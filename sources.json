@@ -1,0 +1,138 @@
+[
+  {
+    "name": "Alto Adige - Bolzano",
+    "feed_url": "https://www.altoadige.it/feed-rss/cronaca-bolzano-1.164",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "bolzano",
+    "description": "Cronaca da Bolzano città"
+  },
+  {
+    "name": "Rai TGR Bolzano",
+    "feed_url": "https://www.rainews.it/tgr/bolzano/rss/tutti",
+    "site_url": "https://www.rainews.it/tgr/bolzano",
+    "lang": "it",
+    "category": "bolzano",
+    "description": "TGR regionale Trentino-Alto Adige"
+  },
+  {
+    "name": "Alto Adige - Merano",
+    "feed_url": "https://www.altoadige.it/feed-rss/cronaca-merano-1.167",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "local",
+    "description": "Cronaca da Merano e dintorni"
+  },
+  {
+    "name": "Alto Adige - Bressanone",
+    "feed_url": "https://www.altoadige.it/feed-rss/cronaca-bressanone-1.165",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "local",
+    "description": "Cronaca da Bressanone e dintorni"
+  },
+  {
+    "name": "Alto Adige - Laives",
+    "feed_url": "https://www.altoadige.it/feed-rss/cronaca-laives-1.166",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "local",
+    "description": "Cronaca da Laives e dintorni"
+  },
+  {
+    "name": "Alto Adige - Bassa Atesina",
+    "feed_url": "https://www.altoadige.it/feed-rss/cronaca-bassa-atesina-1.163",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "local",
+    "description": "Cronaca dalla Bassa Atesina"
+  },
+  {
+    "name": "Alto Adige - Val Venosta",
+    "feed_url": "https://www.altoadige.it/feed-rss/cronaca-venosta-1.170",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "local",
+    "description": "Cronaca dalla Val Venosta"
+  },
+  {
+    "name": "Alto Adige - Pusteria/Gardena/Badia",
+    "feed_url": "https://www.altoadige.it/feed-rss/cronaca-pusteria-gardena-badia-1.168",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "local",
+    "description": "Cronaca da Val Pusteria, Gardena e Badia"
+  },
+  {
+    "name": "Alto Adige - Cronaca",
+    "feed_url": "https://www.altoadige.it/feed-rss/cronaca-1.169",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "news",
+    "description": "Cronaca generale dall'Alto Adige"
+  },
+  {
+    "name": "Alto Adige - Foto",
+    "feed_url": "https://www.altoadige.it/feed-rss/foto-1.171",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "news",
+    "description": "Notizie in foto dall'Alto Adige"
+  },
+  {
+    "name": "Il Dolomiti",
+    "feed_url": "https://www.ildolomiti.it/rss.xml",
+    "site_url": "https://www.ildolomiti.it",
+    "lang": "it",
+    "category": "news",
+    "description": "Quotidiano online dell'Alto Adige"
+  },
+  {
+    "name": "Stol.it",
+    "feed_url": "https://www.stol.it/rss",
+    "site_url": "https://www.stol.it",
+    "lang": "de",
+    "category": "news",
+    "description": "Südtiroler Nachrichtenportal"
+  },
+  {
+    "name": "Suedtirol News",
+    "feed_url": "https://www.suedtirolnews.it/feed",
+    "site_url": "https://www.suedtirolnews.it",
+    "lang": "de",
+    "category": "news",
+    "description": "Aktuelle Nachrichten aus Südtirol"
+  },
+  {
+    "name": "Radio NBC",
+    "feed_url": "https://radionbc.it/feed/",
+    "site_url": "https://radionbc.it",
+    "lang": "it",
+    "category": "news",
+    "description": "Radio NBC - Attualità e cronaca"
+  },
+  {
+    "name": "Alto Adige - Sport",
+    "feed_url": "https://www.altoadige.it/feed-rss/sport-1.172",
+    "site_url": "https://www.altoadige.it",
+    "lang": "it",
+    "category": "sport",
+    "description": "Sport in Alto Adige"
+  },
+  {
+    "name": "Salto.bz",
+    "feed_url": "https://www.salto.bz/it/rss.xml",
+    "site_url": "https://www.salto.bz",
+    "lang": "it",
+    "category": "culture",
+    "description": "Magazine indipendente - IT"
+  },
+  {
+    "name": "Salto.bz DE",
+    "feed_url": "https://www.salto.bz/de/rss.xml",
+    "site_url": "https://www.salto.bz",
+    "lang": "de",
+    "category": "culture",
+    "description": "Unabhängiges Magazin - DE"
+  }
+]
