@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% block title %}{{ t('profile.title') }}{% endblock %}
+
+{% block content %}
+<div class="profile-page">
+  <div class="page-header">
+    <h2>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      {{ t('profile.title') }}
+    </h2>
+    <p class="page-sub">{{ t('profile.subtitle') }}</p>
+  </div>
+
+  <div class="profile-section">
+    <h3>{{ t('profile.preferred_categories') }}</h3>
+    <div class="chip-group" id="pref-categories">
+      <label class="chip" data-value="bolzano">
+        <input type="checkbox" checked> Bolzano
+      </label>
+      <label class="chip" data-value="local">
+        <input type="checkbox"> {{ t('profile.south_tyrol') }}
+      </label>
+      <label class="chip" data-value="news">
+        <input type="checkbox" checked> {{ t('profile.news') }}
+      </label>
+      <label class="chip" data-value="sport">
+        <input type="checkbox"> {{ t('profile.sport') }}
+      </label>
+      <label class="chip" data-value="culture">
+        <input type="checkbox"> {{ t('profile.culture') }}
+      </label>
+    </div>
+  </div>
+
+  <div class="profile-section">
+    <h3>{{ t('profile.learning_language') }}</h3>
+    <p class="section-desc">{{ t('profile.learning_desc') }}</p>
+    <div class="chip-group" id="pref-learn-lang">
+      <label class="chip" data-value="it">
+        <input type="radio" name="learn-lang" value="it"> Italiano
+      </label>
+      <label class="chip" data-value="de">
+        <input type="radio" name="learn-lang" value="de" checked> Deutsch
+      </label>
+      <label class="chip" data-value="none">
+        <input type="radio" name="learn-lang" value="none" checked> {{ t('profile.none') }}
+      </label>
+    </div>
+  </div>
+
+  <div class="profile-section">
+    <h3>{{ t('profile.interface_language') }}</h3>
+    <div class="chip-group" id="pref-ui-lang">
+      <label class="chip" data-value="en">
+        <input type="radio" name="ui-lang" value="en" checked> English
+      </label>
+      <label class="chip" data-value="it">
+        <input type="radio" name="ui-lang" value="it"> Italiano
+      </label>
+      <label class="chip" data-value="de">
+        <input type="radio" name="ui-lang" value="de"> Deutsch
+      </label>
+    </div>
+  </div>
+
+  <div class="profile-actions">
+    <button class="btn btn-primary" id="save-prefs">{{ t('profile.save') }}</button>
+    <span class="save-feedback" id="save-feedback"></span>
+  </div>
+
+  <div class="profile-section">
+    <h3>{{ t('profile.bookmarks') }}</h3>
+    <div id="bookmarks-list" class="bookmarks-list"></div>
+  </div>
+
+  <div class="profile-section">
+    <h3>{{ t('profile.vocabulary') }}</h3>
+    <div id="vocab-list" class="bookmarks-list"></div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var prefs = (window.DN && window.DN.getPrefs()) || { categories: ['bolzano', 'news'], languages: ['all'] };
+
+  document.querySelectorAll('#pref-categories .chip input').forEach(function(cb) {
+    var val = cb.closest('.chip').dataset.value;
+    if (prefs.categories.indexOf(val) > -1) cb.checked = true;
+  });
+
+  var learnRadios = document.querySelectorAll('#pref-learn-lang .chip input');
+  var targetLang = localStorage.getItem('dn_learn_lang') || 'none';
+  learnRadios.forEach(function(r) { if (r.value === targetLang) r.checked = true; });
+
+  var uiRadios = document.querySelectorAll('#pref-ui-lang .chip input');
+  uiRadios.forEach(function(r) { if (r.value === '{{ ui_lang }}') r.checked = true; });
+
+  document.getElementById('save-prefs').addEventListener('click', function() {
+    var cats = [];
+    document.querySelectorAll('#pref-categories .chip input:checked').forEach(function(cb) {
+      cats.push(cb.closest('.chip').dataset.value);
+    });
+    prefs.categories = cats.length ? cats : ['news'];
+    if (window.DN) window.DN.savePrefs(prefs);
+
+    var learnLang = document.querySelector('#pref-learn-lang .chip input:checked');
+    if (learnLang) localStorage.setItem('dn_learn_lang', learnLang.value);
+
+    var uiLang = document.querySelector('#pref-ui-lang .chip input:checked');
+    if (uiLang) {
+      var url = new URL(window.location);
+      url.searchParams.set('ui_lang', uiLang.value);
+      window.location.href = url.toString();
+    } else {
+      var fb = document.getElementById('save-feedback');
+      fb.textContent = 'Saved!';
+      setTimeout(function() { fb.textContent = ''; }, 2000);
+    }
+  });
+
+  function renderBookmarks() {
+    var list = document.getElementById('bookmarks-list');
+    var marks = (window.DN && window.DN.getBookmarks()) || [];
+    if (!marks.length) {
+      list.innerHTML = '<p class="empty-small">No bookmarks yet. Tap the bookmark icon on any article.</p>';
+      return;
+    }
+    list.innerHTML = marks.map(function(m) {
+      return '<div class="bookmark-item">' +
+        '<a href="' + m.link + '" target="_blank" rel="noopener" class="bm-title">' + m.title + '</a>' +
+        '<span class="bm-source">' + (m.source || '') + '</span>' +
+        '<button class="bm-remove" data-id="' + m.id + '">&times;</button>' +
+        '</div>';
+    }).join('');
+    list.querySelectorAll('.bm-remove').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var id = this.dataset.id;
+        var marks = (window.DN && window.DN.getBookmarks()) || [];
+        var idx = marks.findIndex(function(m) { return m.id === id; });
+        if (idx > -1) marks.splice(idx, 1);
+        localStorage.setItem('dn_bookmarks', JSON.stringify(marks));
+        renderBookmarks();
+      });
+    });
+  }
+
+  function renderVocab() {
+    var list = document.getElementById('vocab-list');
+    var vocab = (window.DN && window.DN.getVocab()) || [];
+    if (!vocab.length) {
+      list.innerHTML = '<p class="empty-small">No vocabulary saved. Tap words in Learn mode to save them.</p>';
+      return;
+    }
+    list.innerHTML = vocab.map(function(w) {
+      return '<div class="bookmark-item vocab-item">' +
+        '<span class="bm-title">' + w.word + '</span>' +
+        '<span class="bm-source">' + (w.translation || '') + '</span>' +
+        '<span class="vocab-count">x' + (w.count || 1) + '</span>' +
+        '</div>';
+    }).join('');
+  }
+
+  renderBookmarks();
+  renderVocab();
+})();
+</script>
+{% endblock %}

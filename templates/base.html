@@ -28,7 +28,11 @@
           <nav class="nav">
             <a href="/?ui_lang={{ ui_lang }}" class="nav-link {% if request.path == '/' %}active{% endif %}">{{ t('nav.dashboard') }}</a>
             <a href="/news?ui_lang={{ ui_lang }}" class="nav-link {% if request.path == '/news' %}active{% endif %}">{{ t('nav.news') }}</a>
-            <a href="/briefing?ui_lang={{ ui_lang }}" class="nav-link {% if request.path == '/briefing' %}active{% endif %}">{{ t('nav.briefing') }}</a>
+            <a href="/digest?ui_lang={{ ui_lang }}" class="nav-link {% if request.path == '/digest' %}active{% endif %}">{{ t('nav.digest') }}</a>
+            <a href="/learn?ui_lang={{ ui_lang }}" class="nav-link {% if request.path == '/learn' %}active{% endif %}">{{ t('nav.learn') }}</a>
+            <a href="/info?ui_lang={{ ui_lang }}" class="nav-link {% if request.path == '/info' %}active{% endif %}">{{ t('nav.info') }}</a>
+            <a href="/stats?ui_lang={{ ui_lang }}" class="nav-link {% if request.path == '/stats' %}active{% endif %}">{{ t('nav.stats') }}</a>
+            <a href="/profile?ui_lang={{ ui_lang }}" class="nav-link {% if request.path == '/profile' %}active{% endif %}">{{ t('nav.profile') }}</a>
             <a href="/search?ui_lang={{ ui_lang }}" class="nav-link {% if request.path == '/search' %}active{% endif %}">{{ t('nav.search') }}</a>
             <form method="GET" class="lang-switcher" action="{{ request.path }}">
               {% for key, value in request.args.items() if key != 'ui_lang' %}

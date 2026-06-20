@@ -54,7 +54,7 @@
   <section class="articles">
     {% if articles %}
       {% for article in articles %}
-      <article class="card">
+      <article class="card" data-article-id="{{ article.id }}">
         {% if article.media %}
         <div class="card-img">
           <img src="{{ article.media }}" alt="" loading="lazy">

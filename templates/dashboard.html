@@ -101,7 +101,7 @@
     </div>
     <div class="articles">
       {% for article in bolzano_news[:5] %}
-      <article class="card card-compact">
+      <article class="card card-compact" data-article-id="{{ article.id }}">
         {% if article.media %}
         <div class="card-img">
           <img src="{{ article.media }}" alt="" loading="lazy">
@@ -138,7 +138,7 @@
     {% if brief %}
     <div class="articles">
       {% for article in brief %}
-      <article class="card card-compact">
+      <article class="card card-compact" data-article-id="{{ article.id }}">
         {% if article.media %}
         <div class="card-img">
           <img src="{{ article.media }}" alt="" loading="lazy">

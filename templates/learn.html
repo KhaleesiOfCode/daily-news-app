@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% block title %}{{ t('learn.title') }}{% endblock %}
+
+{% block content %}
+<div class="learn-page">
+  <div class="page-header">
+    <h2>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+      {{ t('learn.title') }}
+    </h2>
+    <p class="page-sub">{{ t('learn.subtitle') }}</p>
+  </div>
+
+  <div class="learn-controls">
+    <div class="learn-tabs">
+      <button class="learn-tab active" data-view="side-by-side">{{ t('learn.side_by_side') }}</button>
+      <button class="learn-tab" data-view="target">{{ t('learn.target_language') }}</button>
+    </div>
+
+    <div class="learn-lang-select">
+      <label>{{ t('learn.learning') }}:</label>
+      <select id="learn-target">
+        <option value="de">Deutsch</option>
+        <option value="it">Italiano</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="learn-panels" id="learn-container" data-lang="de">
+    <div class="learn-panel" id="panel-side-by-side">
+      <div class="dual-pane">
+        <div class="dual-col" id="dual-it">
+          <h4 class="dual-header lang-it">Italiano</h4>
+          <div class="dual-articles"></div>
+        </div>
+        <div class="dual-col" id="dual-de">
+          <h4 class="dual-header lang-de">Deutsch</h4>
+          <div class="dual-articles"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="learn-panel" id="panel-target" style="display:none">
+      <p class="learn-hint">{{ t('learn.hint') }}</p>
+      <div id="target-articles" class="articles"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var targetLang = localStorage.getItem('dn_learn_lang') || 'de';
+  document.getElementById('learn-target').value = targetLang;
+  document.getElementById('learn-container').dataset.lang = targetLang;
+
+  document.querySelectorAll('.learn-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.learn-tab').forEach(function(t) { t.classList.remove('active'); });
+      this.classList.add('active');
+      document.querySelectorAll('.learn-panel').forEach(function(p) { p.style.display = 'none'; });
+      document.getElementById('panel-' + this.dataset.view).style.display = 'block';
+    });
+  });
+
+  document.getElementById('learn-target').addEventListener('change', function() {
+    localStorage.setItem('dn_learn_lang', this.value);
+    document.getElementById('learn-container').dataset.lang = this.value;
+    loadArticles();
+  });
+
+  function loadArticles() {
+    var target = document.getElementById('learn-target').value;
+    var other = target === 'de' ? 'it' : 'de';
+
+    /* Load both languages */
+    fetch('/api/news?lang=' + other + '&category=news&limit=8')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var col = document.querySelector('#dual-' + other + ' .dual-articles');
+        col.innerHTML = renderArticles(data.articles || [], other);
+      });
+
+    fetch('/api/news?lang=' + target + '&category=news&limit=8')
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var col = document.querySelector('#dual-' + target + ' .dual-articles');
+        col.innerHTML = renderArticles(data.articles || [], target);
+
+        /* Target language view */
+        var targetDiv = document.getElementById('target-articles');
+        targetDiv.innerHTML = '<p class="learn-hint">' + 'Tap any word to see its translation' + '</p>' +
+          renderArticles(data.articles || [], target, true);
+      });
+  }
+
+  function renderArticles(articles, lang, clickable) {
+    if (!articles.length) return '<p class="empty-small">No articles</p>';
+    return articles.map(function(a) {
+      var summary = a.summary || '';
+      if (clickable) {
+        summary = highlightWords(summary);
+      }
+      return '<article class="card card-compact">' +
+        (a.media ? '<div class="card-img"><img src="' + a.media + '" alt="" loading="lazy"></div>' : '') +
+        '<div class="card-body">' +
+        '<div class="card-meta"><span class="source">' + a.source + '</span>' +
+        '<span class="lang-tag lang-' + lang + '">' + lang.toUpperCase() + '</span></div>' +
+        '<h3 class="card-title"><a href="' + a.link + '" target="_blank" rel="noopener">' + a.title + '</a></h3>' +
+        '<p class="card-summary">' + summary.slice(0, 400) + '</p>' +
+        '</div></article>';
+    }).join('');
+  }
+
+  function highlightWords(text) {
+    return text.replace(/\b(\w{4,})\b/g, '<span class="learn-word">$1</span>');
+  }
+
+  loadArticles();
+})();
+</script>
+{% endblock %}

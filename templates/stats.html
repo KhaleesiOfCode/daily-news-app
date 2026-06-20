@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ t('stats.title') }}{% endblock %}
+
+{% block content %}
+<div class="stats-page">
+  <div class="page-header">
+    <h2>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      {{ t('stats.title') }}
+    </h2>
+    <p class="page-sub">{{ t('stats.subtitle') }}</p>
+  </div>
+
+  <div class="stats-grid" id="stats-container">
+    <div class="stat-card">
+      <div class="stat-number" id="stat-total">--</div>
+      <div class="stat-label">{{ t('stats.total_read') }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="stat-streak">--</div>
+      <div class="stat-label">{{ t('stats.streak') }}</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="stat-it">--</div>
+      <div class="stat-label">Italiano</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="stat-de">--</div>
+      <div class="stat-label">Deutsch</div>
+    </div>
+  </div>
+
+  <div class="stats-chart-section">
+    <h3>{{ t('stats.recent_activity') }}</h3>
+    <div class="activity-bars" id="activity-chart"></div>
+  </div>
+
+  <div class="stats-tip">
+    <p>{{ t('stats.tip') }}</p>
+  </div>
+</div>
+
+<script>
+(function() {
+  function loadStats() {
+    if (!window.DN) return;
+    var total = window.DN.getTotalReads();
+    var streak = window.DN.getStreak();
+    var breakdown = window.DN.getLangBreakdown();
+
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-streak').textContent = streak + ' {{ t('stats.days') }}';
+    document.getElementById('stat-it').textContent = breakdown.it;
+    document.getElementById('stat-de').textContent = breakdown.de;
+
+    var stats = window.DN.getStats();
+    var dates = Object.keys(stats.reads || {}).sort().slice(-14);
+    var chart = document.getElementById('activity-chart');
+    if (dates.length) {
+      var maxVal = Math.max.apply(null, dates.map(function(d) { return stats.reads[d].total || 0; }));
+      chart.innerHTML = dates.map(function(d) {
+        var val = stats.reads[d].total || 0;
+        var pct = maxVal ? (val / maxVal * 80) : 0;
+        return '<div class="bar-item" title="' + d + ': ' + val + ' articles">' +
+          '<div class="bar" style="height:' + pct + '%"></div>' +
+          '<span class="bar-label">' + d.slice(-2) + '/' + d.slice(-5, -3) + '</span>' +
+          '</div>';
+      }).join('');
+    } else {
+      chart.innerHTML = '<p class="empty-small">{{ t('stats.no_activity') }}</p>';
+    }
+  }
+  loadStats();
+})();
+</script>
+{% endblock %}

@@ -15,6 +15,7 @@ from news_fetcher import (
 )
 from weather_fetcher import fetch_weather
 from markets_fetcher import fetch_markets
+from info_fetcher import fetch_air_quality, PRACTICAL_LINKS, EVENTS_SOURCES
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'daily-news-bolzano-dev')
@@ -162,6 +163,54 @@ def search(ui_lang, t):
         'selected_category': category,
         'selected_lang': lang,
         'errors': errors,
+    }
+
+
+@app.route('/profile')
+@inject_template_vars
+def profile(ui_lang, t):
+    categories = get_categories()
+    languages = get_languages()
+    return 'profile.html', {
+        'categories': categories,
+        'languages': languages,
+        'get_category_name': lambda cat: _category_name(cat, t),
+        'get_language_name': get_language_name,
+    }
+
+
+@app.route('/learn')
+@inject_template_vars
+def learn(ui_lang, t):
+    return 'learn.html', {}
+
+
+@app.route('/info')
+@inject_template_vars
+def info(ui_lang, t):
+    air = fetch_air_quality()
+    return 'info.html', {
+        'aq': air,
+        'links': PRACTICAL_LINKS,
+        'events': EVENTS_SOURCES,
+    }
+
+
+@app.route('/stats')
+@inject_template_vars
+def stats(ui_lang, t):
+    return 'stats.html', {}
+
+
+@app.route('/digest')
+@inject_template_vars
+def digest(ui_lang, t):
+    articles, errors = fetch_briefing(hours=24, max_articles=10)
+    return 'digest.html', {
+        'articles': articles,
+        'errors': errors,
+        'get_category_name': lambda cat: _category_name(cat, t),
+        'get_language_name': get_language_name,
     }
 
 
