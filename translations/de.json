@@ -86,6 +86,10 @@
   "info.air_quality": "Luftqualität",
   "info.air_unavailable": "Luftqualitätsdaten vorübergehend nicht verfügbar",
   "info.events": "Veranstaltungen & Kultur",
+  "info.events_calendar": "Bevorstehende Veranstaltungen",
+  "info.bus_departures": "Bus-Abfahrten",
+  "info.bus_hint": "Echtzeit-Abfahrten von wichtigen Haltestellen in Bozen",
+  "info.bus_plan": "Reise planen auf Südtirol Mobil",
   "info.useful_links": "Nützliche Links",
 
   "stats.title": "Lese-Statistiken",

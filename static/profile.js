@@ -93,36 +93,60 @@
   window.DN.isBookmarked = isBookmarked;
   window.DN.getBookmarks = getBookmarks;
 
-  /* Add bookmark buttons to article cards */
+  /* Add bookmark + share buttons to article cards */
   document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.card').forEach(function(card) {
       var meta = card.querySelector('.card-meta');
       if (!meta) return;
       var id = card.dataset.articleId;
       if (!id) return;
-      var btn = document.createElement('button');
-      btn.className = 'bookmark-btn';
-      btn.innerHTML = isBookmarked(id)
-        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'
-        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
-      btn.title = isBookmarked(id) ? 'Remove bookmark' : 'Bookmark';
+
+      var shareUrl = (card.querySelector('.card-title a') || {}).href || '';
+      var shareTitle = (card.querySelector('.card-title') || {}).textContent || '';
+
       var articleData = {
         id: id,
-        title: (card.querySelector('.card-title') || {}).textContent || '',
-        link: (card.querySelector('.card-title a') || {}).href || '',
+        title: shareTitle,
+        link: shareUrl,
         source: (card.querySelector('.source') || {}).textContent || '',
         summary: (card.querySelector('.card-summary') || {}).textContent || '',
         lang: (card.querySelector('.lang-tag') || {}).className.match(/lang-(\w+)/) ? RegExp.$1 : '',
       };
-      btn.addEventListener('click', function(e) {
+
+      /* Bookmark button */
+      var bmBtn = document.createElement('button');
+      bmBtn.className = 'card-action-btn bookmark-btn';
+      bmBtn.innerHTML = isBookmarked(id)
+        ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'
+        : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
+      bmBtn.title = isBookmarked(id) ? 'Remove bookmark' : 'Bookmark';
+      bmBtn.addEventListener('click', function(e) {
         e.stopPropagation();
         var saved = toggleBookmark(articleData);
-        btn.innerHTML = saved
+        bmBtn.innerHTML = saved
           ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>'
           : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>';
-        btn.title = saved ? 'Remove bookmark' : 'Bookmark';
+        bmBtn.title = saved ? 'Remove bookmark' : 'Bookmark';
       });
-      meta.appendChild(btn);
+      meta.appendChild(bmBtn);
+
+      /* Share button */
+      var shareBtn = document.createElement('button');
+      shareBtn.className = 'card-action-btn share-btn';
+      shareBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
+      shareBtn.title = 'Share';
+      shareBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (navigator.share) {
+          navigator.share({ title: shareTitle, url: shareUrl }).catch(function() {});
+        } else if (navigator.clipboard) {
+          navigator.clipboard.writeText(shareUrl).then(function() {
+            shareBtn.title = 'Copied!';
+            setTimeout(function() { shareBtn.title = 'Share'; }, 2000);
+          });
+        }
+      });
+      meta.appendChild(shareBtn);
     });
   });
 
@@ -232,6 +256,78 @@
 
   window.DN.getVocab = getVocab;
   window.DN.addWord = addWord;
+
+  /* ======================== BREAKING NEWS NOTIFICATIONS ======================== */
+  var SEEN_KEY = 'dn_seen_articles';
+  var NOTIF_PERMISSION_KEY = 'dn_notif_permission_asked';
+  var CHECK_INTERVAL = 300000;
+
+  function getSeenIds() {
+    try { return JSON.parse(LS.getItem(SEEN_KEY)) || []; } catch (e) { return []; }
+  }
+
+  function addSeenIds(ids) {
+    var seen = getSeenIds();
+    ids.forEach(function(id) { if (seen.indexOf(id) === -1) seen.push(id); });
+    if (seen.length > 500) seen = seen.slice(-500);
+    LS.setItem(SEEN_KEY, JSON.stringify(seen));
+  }
+
+  function checkForNewArticles() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission !== 'granted') return;
+
+    var seen = getSeenIds();
+    var url = window.location.pathname === '/news' || window.location.pathname === '/'
+      ? '/api/news?limit=20'
+      : '/api/news?category=bolzano&limit=10';
+
+    fetch(url)
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        var articles = data.articles || [];
+        var newArticles = articles.filter(function(a) { return seen.indexOf(a.id) === -1; });
+        if (newArticles.length > 0) {
+          var latest = newArticles[0];
+          var count = newArticles.length;
+          var body = count === 1
+            ? latest.title.slice(0, 80)
+            : count + ' new articles available';
+          new Notification('Daily News - ' + latest.source, { body: body, icon: '/static/manifest.json' });
+          addSeenIds(newArticles.map(function(a) { return a.id; }));
+        }
+      })
+      .catch(function() {});
+  }
+
+  function requestNotificationPermission() {
+    if (!('Notification' in window)) return;
+    if (Notification.permission === 'granted') return;
+    if (Notification.permission === 'denied') return;
+    if (LS.getItem(NOTIF_PERMISSION_KEY)) return;
+
+    Notification.requestPermission();
+    LS.setItem(NOTIF_PERMISSION_KEY, 'true');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    requestNotificationPermission();
+
+    /* Add seen article IDs from current page */
+    var ids = [];
+    document.querySelectorAll('.card[data-article-id]').forEach(function(c) {
+      ids.push(c.dataset.articleId);
+    });
+    addSeenIds(ids);
+
+    /* Periodic check */
+    setInterval(checkForNewArticles, CHECK_INTERVAL);
+
+    /* Also check when page becomes visible again */
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) checkForNewArticles();
+    });
+  });
 
   /* Tap-to-translate on learn page */
   document.addEventListener('DOMContentLoaded', function() {

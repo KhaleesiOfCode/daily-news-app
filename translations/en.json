@@ -86,6 +86,10 @@
   "info.air_quality": "Air Quality",
   "info.air_unavailable": "Air quality data temporarily unavailable",
   "info.events": "Events & Culture",
+  "info.events_calendar": "Upcoming Events",
+  "info.bus_departures": "Bus Departures",
+  "info.bus_hint": "Real-time departures from major Bolzano stops",
+  "info.bus_plan": "Plan your journey on S\u00fcdtirol Mobil",
   "info.useful_links": "Useful Links",
 
   "stats.title": "Reading Stats",

@@ -86,6 +86,10 @@
   "info.air_quality": "Qualità dell'Aria",
   "info.air_unavailable": "Dati qualità aria temporaneamente non disponibili",
   "info.events": "Eventi & Cultura",
+  "info.events_calendar": "Prossimi Eventi",
+  "info.bus_departures": "Partenze Bus",
+  "info.bus_hint": "Partenze in tempo reale dalle fermate principali di Bolzano",
+  "info.bus_plan": "Pianifica il viaggio su S\u00fcdtirol Mobil",
   "info.useful_links": "Link Utili",
 
   "stats.title": "Statistiche di Lettura",

@@ -1,11 +1,19 @@
-var CACHE_NAME = 'dailynews-v1';
+var CACHE_NAME = 'dailynews-v2';
 var STATIC_URLS = [
   '/',
   '/news',
   '/briefing',
   '/search',
+  '/digest',
+  '/learn',
+  '/info',
+  '/stats',
+  '/profile',
   '/static/style.css',
   '/static/manifest.json',
+  '/static/app.js',
+  '/static/profile.js',
+  '/static/theme.js',
 ];
 
 self.addEventListener('install', function(event) {
@@ -65,3 +73,31 @@ function fetchAndCache(request) {
     return response;
   });
 }
+
+/* === Push Notifications === */
+self.addEventListener('push', function(event) {
+  var data = {};
+  try { data = event.data.json(); } catch (e) {}
+
+  var options = {
+    body: data.body || 'New articles available',
+    icon: '/static/icon-192.png',
+    badge: '/static/icon-192.png',
+    data: { url: data.url || '/news' }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(
+      data.title || 'Daily News',
+      options
+    )
+  );
+});
+
+self.addEventListener('notificationclick', function(event) {
+  event.notification.close();
+  var url = event.notification.data && event.notification.data.url;
+  if (url) {
+    event.waitUntil(clients.openWindow(url));
+  }
+});

@@ -68,6 +68,13 @@ PRACTICAL_LINKS = [
         'icon': 'bus',
     },
     {
+        'name': 'Mobil Südtirol',
+        'url': 'https://www.suedtirolmobil.info',
+        'desc': 'Journey planner & real-time departures',
+        'lang': 'de',
+        'icon': 'bus',
+    },
+    {
         'name': 'Comune di Bolzano',
         'url': 'https://www.comune.bolzano.it',
         'desc': 'Albo pretorio, avvisi, servizi comunali',
@@ -79,13 +86,6 @@ PRACTICAL_LINKS = [
         'url': 'https://www.provincia.bz.it',
         'desc': 'Servizi provinciali e informazioni',
         'lang': 'it',
-        'icon': 'government',
-    },
-    {
-        'name': 'Südtiroler Gemeinden',
-        'url': 'https://www.gvcc.net',
-        'desc': 'Gemeindedienste und Informationen',
-        'lang': 'de',
         'icon': 'government',
     },
     {
@@ -136,4 +136,43 @@ EVENTS_SOURCES = [
         'url': 'https://www.suedtirol.info/events',
         'desc': 'Veranstaltungen in Südtirol',
     },
+    {
+        'name': 'Bolzano Eventi',
+        'url': 'https://www.bolzanoeventi.it',
+        'desc': 'Eventi a Bolzano',
+    },
 ]
+
+
+def fetch_events():
+    try:
+        r = requests.get(
+            'https://www.altoadige.it/eventi',
+            timeout=8,
+            headers={'User-Agent': 'Mozilla/5.0'},
+        )
+        events = []
+        if r.status_code == 200:
+            import re
+            titles = re.findall(r'<h[23][^>]*class="[^"]*card-title[^"]*"[^>]*>([^<]+)', r.text)[:8]
+            dates = re.findall(r'(\d{1,2}\s+(?:gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)\s+\d{4})', r.text)[:8]
+            links = re.findall(r'<a[^>]*href="(/eventi/[^"]+)"', r.text)[:8]
+            for i in range(max(len(titles), len(dates), len(links))):
+                events.append({
+                    'title': titles[i] if i < len(titles) else '',
+                    'date': dates[i] if i < len(dates) else '',
+                    'url': 'https://www.altoadige.it' + (links[i] if i < len(links) else '') if i < len(links) else '',
+                })
+        return events
+    except Exception:
+        return []
+
+
+def get_bus_stops():
+    return [
+        {'name': 'Bolzano Stazione', 'id': 'BZ001'},
+        {'name': 'Piazza Walther', 'id': 'BZ002'},
+        {'name': 'Via Roma', 'id': 'BZ003'},
+        {'name': 'Ospedale', 'id': 'BZ004'},
+        {'name': 'Università', 'id': 'BZ005'},
+    ]

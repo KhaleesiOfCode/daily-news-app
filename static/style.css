@@ -18,7 +18,29 @@
   --de: #dd0000;
   --radius: 8px;
   --shadow: 0 1px 3px rgba(0,0,0,.08);
-  --header-h: 56px;
+  --shadow-lg: 0 4px 12px rgba(0,0,0,.1);
+  --section-highlight-bg: #f0f6ff;
+  --stats-tip-bg: #e8f0fe;
+  --spinner-overlay: rgba(255,255,255,.7);
+}
+
+[data-theme="dark"] {
+  --bg: #1a1d23;
+  --surface: #2a2d35;
+  --border: #3a3d45;
+  --text: #e4e6ea;
+  --text-muted: #9ca0a8;
+  --accent: #4a9eff;
+  --accent-hover: #3a8eef;
+  --positive: #34d058;
+  --negative: #f85149;
+  --it: #34d058;
+  --de: #f85149;
+  --shadow: 0 1px 3px rgba(0,0,0,.3);
+  --shadow-lg: 0 4px 12px rgba(0,0,0,.4);
+  --section-highlight-bg: #1a2638;
+  --stats-tip-bg: #1a2638;
+  --spinner-overlay: rgba(0,0,0,.5);
 }
 
 body {
@@ -1117,18 +1139,41 @@ body {
   padding: 16px 0;
 }
 
-.bookmark-btn {
+.card-action-btn {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 6px 4px;
   color: var(--text-muted);
   display: flex;
   align-items: center;
   -webkit-tap-highlight-color: transparent;
+  min-width: 28px;
+  justify-content: center;
 }
 
-.bookmark-btn:hover {
+.card-action-btn:hover {
+  color: var(--accent);
+}
+
+.share-btn:hover {
+  color: var(--positive);
+}
+
+/* Theme toggle in header */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px 10px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  min-height: 36px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.theme-toggle:hover {
   color: var(--accent);
 }
 
@@ -1548,6 +1593,128 @@ body {
   font-size: .95rem;
   font-weight: 600;
   margin-bottom: 12px;
+}
+
+/* ===== Events List ===== */
+.events-list {
+  min-height: 60px;
+}
+
+.events-loading {
+  font-size: .85rem;
+  color: var(--text-muted);
+  padding: 12px 0;
+}
+
+.events-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.event-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+}
+
+.event-date-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  background: var(--accent);
+  color: white;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.event-date-icon small {
+  font-size: .55rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.event-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: .85rem;
+}
+
+.event-info strong {
+  font-size: .9rem;
+}
+
+.event-desc {
+  font-size: .78rem;
+  color: var(--text-muted);
+}
+
+.events-more {
+  margin-top: 10px;
+  font-size: .82rem;
+}
+
+.events-more a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* ===== Bus Widget ===== */
+.bus-widget {
+  padding: 4px 0;
+}
+
+.bus-hint {
+  font-size: .82rem;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.bus-stops {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bus-stop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--bg);
+  border-radius: var(--radius);
+  font-size: .85rem;
+}
+
+.bus-stop-name {
+  font-weight: 600;
+}
+
+.bus-departures {
+  font-family: monospace;
+  font-size: .82rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.bus-credit {
+  margin-top: 10px;
+  font-size: .78rem;
+  color: var(--text-muted);
+}
+
+.bus-credit a {
+  color: var(--accent);
+  text-decoration: none;
 }
 
 /* ===== Footer ===== */

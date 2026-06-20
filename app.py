@@ -15,7 +15,7 @@ from news_fetcher import (
 )
 from weather_fetcher import fetch_weather
 from markets_fetcher import fetch_markets
-from info_fetcher import fetch_air_quality, PRACTICAL_LINKS, EVENTS_SOURCES
+from info_fetcher import fetch_air_quality, fetch_events, get_bus_stops, PRACTICAL_LINKS, EVENTS_SOURCES
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'daily-news-bolzano-dev')
@@ -189,10 +189,14 @@ def learn(ui_lang, t):
 @inject_template_vars
 def info(ui_lang, t):
     air = fetch_air_quality()
+    bus_stops = get_bus_stops()
+    import json
     return 'info.html', {
         'aq': air,
         'links': PRACTICAL_LINKS,
         'events': EVENTS_SOURCES,
+        'bus_stops': bus_stops,
+        'bus_stops_json': json.dumps(bus_stops),
     }
 
 
