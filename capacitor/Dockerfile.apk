@@ -1,0 +1,26 @@
+FROM node:20-bullseye
+
+RUN apt-get update && apt-get install -y openjdk-17-jdk android-sdk wget unzip && rm -rf /var/lib/apt/lists/*
+
+ENV ANDROID_HOME=/usr/lib/android-sdk
+ENV ANDROID_SDK_ROOT=$ANDROID_HOME
+ENV PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+
+RUN mkdir -p $ANDROID_HOME/cmdline-tools && \
+    wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip && \
+    unzip -q cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools && \
+    mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest && \
+    rm cmdline-tools.zip && \
+    yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses > /dev/null 2>&1 && \
+    $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0" "platform-tools"
+
+WORKDIR /app
+COPY . .
+
+RUN npm install
+ENV APP_URL=http://10.0.2.2:5000
+RUN node copy-www.js && npx cap sync android
+
+RUN cd android && ./gradlew assembleDebug
+
+CMD ["cp", "android/app/build/outputs/apk/debug/app-debug.apk", "/output/daily-news.apk"]

@@ -32,6 +32,44 @@ docker build -t daily-news .
 docker run -p 5000:5000 daily-news
 ```
 
+## Android APK
+
+The app can be packaged as a real Android APK via **Capacitor** (wraps the web app in a native WebView).
+
+### Option A: GitHub Actions (no local setup)
+
+1. Fork/push to your GitHub repo
+2. Go to **Actions** tab → **Build Android APK** → **Run workflow**
+3. Enter your deployed app URL (or use `http://localhost:5000` for local-only)
+4. Download the APK from the workflow artifacts
+
+### Option B: Local Docker build
+
+```bash
+cd capacitor
+docker build -f Dockerfile.apk -t daily-news-apk .
+docker run --rm -v ${PWD}:/output daily-news-apk
+```
+
+### Option C: Local Android Studio
+
+```bash
+cd capacitor
+npm install
+npx cap sync android
+npx cap open android
+```
+
+Then in Android Studio: **Build → Build Bundle(s) / APK → Build APK**
+
+### Phone setup
+
+1. Enable **Install from unknown apps** in Android settings
+2. Open the APK file → tap **Install**
+3. Open "Daily News" from your app drawer
+
+**Note:** The APK loads the Flask app from a URL. For local use, run `python app.py` on your PC and keep it on the same network. For standalone use, deploy Flask to Render and update `capacitor.config.json` with the public URL.
+
 ## Project Structure
 
 ```

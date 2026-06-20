@@ -1,0 +1,24 @@
+import type { CapacitorConfig } from '@capacitor/cli';
+
+const config: CapacitorConfig = {
+  appId: 'com.dailynews.bolzano',
+  appName: 'Daily News',
+  webDir: 'www',
+  server: {
+    url: 'http://localhost:5000',
+    cleartext: true,
+  },
+  android: {
+    buildOptions: {
+      keystorePath: null,
+    },
+  },
+  plugins: {
+    SplashScreen: {
+      launchShowDuration: 1000,
+      backgroundColor: '#1a73e8',
+    },
+  },
+};
+
+export default config;
