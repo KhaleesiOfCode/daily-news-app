@@ -17,7 +17,11 @@ from weather_fetcher import fetch_weather
 from markets_fetcher import fetch_markets
 from info_fetcher import fetch_air_quality, fetch_events, get_bus_stops, PRACTICAL_LINKS, EVENTS_SOURCES
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_folder=os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static'),
+    static_url_path='/static',
+)
 app.secret_key = os.environ.get('SECRET_KEY', 'daily-news-bolzano-dev')
 
 
