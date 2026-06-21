@@ -4,7 +4,7 @@ from pathlib import Path
 TRANSLATIONS_DIR = Path(__file__).parent / 'translations'
 
 SUPPORTED_LANGS = ['en', 'it', 'de']
-DEFAULT_LANG = 'en'
+DEFAULT_LANG = 'en'  # English is the default UI language
 
 _cache = {}
 
