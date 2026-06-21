@@ -20,23 +20,7 @@
   </div>
   {% endif %}
 
-  {% if markets and not markets.error %}
-  <div class="briefing-markets">
-    {% for m in markets %}
-    {% if m.price %}
-    <div class="bm-item">
-      <span class="bm-name">{{ m.name }}</span>
-      <span class="bm-price">{{ "%.2f"|format(m.price) }}</span>
-      {% if m.change_pct is not none %}
-      <span class="bm-change {% if m.change_pct >= 0 %}positive{% else %}negative{% endif %}">
-        {{ "%+.2f"|format(m.change_pct) }}%
-      </span>
-      {% endif %}
-    </div>
-    {% endif %}
-    {% endfor %}
-  </div>
-  {% endif %}
+
 
   <div class="briefing-tools">
     <form method="GET" action="/briefing" class="briefing-hours">

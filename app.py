@@ -97,13 +97,11 @@ def inject_template_vars(route_func):
 @inject_template_vars
 def dashboard(ui_lang, t):
     weather = fetch_weather()
-    markets = fetch_markets()
     brief, _ = fetch_briefing(hours=48, max_articles=8)
     bolzano_news, _ = fetch_all(category='bolzano')
 
     return 'dashboard.html', {
         'weather': weather,
-        'markets': markets,
         'brief': brief,
         'bolzano_news': bolzano_news,
     }
@@ -136,12 +134,10 @@ def briefing(ui_lang, t):
     articles, errors = fetch_briefing(hours=hours, max_articles=15)
 
     weather = fetch_weather()
-    markets = fetch_markets()
 
     return 'briefing.html', {
         'articles': articles,
         'weather': weather,
-        'markets': markets,
         'errors': errors,
         'hours': hours,
     }

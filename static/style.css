@@ -258,6 +258,11 @@ body {
   margin-bottom: 20px;
 }
 
+.widgets-row-single,
+.widgets-row:only-child {
+  grid-template-columns: 1fr;
+}
+
 @media (max-width: 600px) {
   .widgets-row {
     grid-template-columns: 1fr;
